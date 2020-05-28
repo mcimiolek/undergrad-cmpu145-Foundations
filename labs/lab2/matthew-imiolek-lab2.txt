@@ -1,0 +1,79 @@
+;; Matthew Imiolek
+;; CS 145-52 Foundations of Computer Science
+;; Lab 2
+
+(load "asmt-helper.txt")
+
+;; PROBLEM 1: SET-PRODUCT
+;; ---------------------------------------------
+;; INPUTS: Two sets, FRST and SCND
+;; OUTPUTS: One set made of the cross product of
+;;          the two input sets
+
+
+;; Program to create the cross product of two sets
+(define SET-PRODUCT (lambda (FRST SCND)
+;; Check if SCND is empty 
+                      (cond
+                      ;; Checks if SCND is empty and returns it if it is
+                        ((empty? SCND) SCND)
+                      ;; Creates and adds the cross product of the first value of SCND and
+                      ;; all the values of FRST to a list
+                      (else(append (map (lambda (fFRST)
+                           (list fFRST (first SCND))) FRST) (SET-PRODUCT FRST (rest SCND)))))))
+
+(tester '(SET-PRODUCT () '((1 2) (2 3) (3 4))))
+(tester '(SET-PRODUCT '(1 2 3) '(x y)))
+(tester '(SET-PRODUCT '((1 2) (1 5)) '(A B)))
+(tester '(SET-PRODUCT '((1 2) (1 5)) '(A B C)))
+(tester '(SET-PRODUCT '((1 2) (1 5) (1 7)) '(A B C)))
+(tester '(SET-PRODUCT '((1 2) (1 5) (1 7)) '(A B)))
+(tester '(SET-PRODUCT '((1 2) (1 5) (1 7)) '()))
+
+
+;; PROBLEM 2: INVERSE
+;; ---------------------------------------------
+;; INPUTS: A binary relation, BR
+;; OUTPUTS: A binary relation
+
+;; Program that creates a list of the inverse of each value in BR
+(define INVERSE (lambda (BR)
+                  ;; Inverts them
+                  (map reverse BR)))
+
+(tester '(INVERSE '((1 2) (3 4) (5 6))))
+(tester '(INVERSE '()))
+(tester '(INVERSE '((a 2) (b 4) (c 6) (d 8))))
+
+
+;; PROBLEM 3: SYMMETRIC?
+;; ---------------------------------------------
+;; INPUTS: A binary relation, BR
+;; OUTPUTS: boolean
+
+;; Checks if BR is symmetric
+(define SYMMETRIC? (lambda (BR)
+  (cond
+    ;; Returns true if BR went through checker without returning false
+    ((empty? BR) true)
+    ;; Checks for ordered pairs with the same value in the first and second values
+    ((equal? (first (first BR)) (second (first BR))) (SYMMETRIC?(rest BR)))
+    ;; Checks for another ordered pair in BR that would make a symmetric pair with
+    ;; the first value in BR
+    ((ormap (lambda (fBR)
+      (and (equal? (first fBR) (second (first BR))) (equal? (second fBR) (first (first BR))))) (rest BR)) 
+      (SYMMETRIC? (remove (list (second (first BR)) (first (first BR))) (rest BR))))
+    ;; Returns false if none of the above are true
+    (else false))))
+                  
+(tester '(SYMMETRIC? '((1 2) (3 3) (2 1))))
+(tester '(SYMMETRIC? '((3 3))))
+(tester '(SYMMETRIC? '()))
+(tester '(SYMMETRIC? '((1 2) (2 1))))
+(tester '(SYMMETRIC? '((3 3) (4 4))))
+(tester '(SYMMETRIC? '((4 5) (4 5))))
+(tester '(SYMMETRIC? '((4 5))))
+(tester '(SYMMETRIC? '((4 5) (2 3))))
+(tester '(SYMMETRIC? '((a a) (b b))))
+(tester '(SYMMETRIC? '((a b) (b a))))
+(tester '(SYMMETRIC? '((a b) (b d))))

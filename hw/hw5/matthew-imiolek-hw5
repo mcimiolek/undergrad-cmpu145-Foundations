@@ -1,0 +1,87 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Homework 4
+
+(load "asmt-helper.txt")
+(load "hw5-helper.txt")
+
+
+;; ----------------------------------------------------------------------------
+;; 1
+;; ----------------------------------------------------------------------------
+;; Recall the theorem called CRACKIE:
+;; CRACKIE: x + Sy = Sx + y for all natural numbers x and y.
+;; Define a function, called test-crackie, that uses random, let* and dotimes
+;; to test that the above property holds for the nn-addn function defined 
+;; during Lab 4. The test-crackie function should take a single input n that 
+;; determines how many tests the function will perform.
+
+
+;;  TEST-CRACKIE
+;; ----------------------------------------
+;;  INPUTS: N, the number of different tests run
+;;  OUTPUT: The two random values RNDX and RNDY with #t if RNDX + S(RNDY) =
+;;          S(RNDX) + RNDY, otherwise returns false
+;; This program uses helper functions make-nn, nn-addn, and nn-succ from
+;; hw5-helper.txt
+
+(define test-crackie (lambda (n)
+                      (dotimes (i n)
+                      ;; RNDX = a random number from 0 to 99
+                      ;; RNDY = a random number from 0 to 99
+                      ;; NNX = the corresponding list of ones to RNDX
+                      ;; NNY = the corresponding list of ones to RNDY
+                               (let* ((rndx (random 100))
+                                      (rndy (random 100))
+                                      (nnx (make-nn rndx))
+                                      (nny (make-nn rndy)))
+                                 ;; Prints the output in the form of
+                                 ;; [RNDX, RNDY: boolean result]
+                                 (printf "[~A, ~A: ~A]" rndx rndy
+                                         ;; Checks if NNX + S(NNY) =
+                                         ;;           NNY + S(NNX), returning
+                                         ;; true if it does and false if not
+                                         (equal? (nn-addn nnx (nn-succ nny))
+                                                 (nn-addn nny 
+                                                          (nn-succ nnx))))))))
+
+(tester '(test-crackie 20))
+(printf "#\n") ;; Added for clarity between tests
+(tester '(test-crackie 20))
+(printf "#\n") ;; Added for clarity between tests
+
+
+;; ----------------------------------------------------------------------------
+;; 2
+;; ----------------------------------------------------------------------------
+;; Define a function nn-mult.
+
+
+;; NN-MULT
+;; -------------------------------------------
+;; INPUTS: NNX, NNY, two natural numbers represented as lists of ones
+;; OUTPUT: The product of NNX and NNY represented as a list of ones
+;; Uses the following rules:
+;;    - x * 0 = 0
+;;    - x * S(y) = (x * y) + x
+;; This program uses helper functions nn-zero?, nn-addn, and nn-pred from
+;; hw5-helper.txt
+
+;; Returns the product of NNX and NNY as a list of ones
+(define nn-mult (lambda (nnx nny)
+                 (cond
+                   ;; If NNY = 0, return the product as 0
+                   ((nn-zero? nny) '())
+                   ;; Add NNX to the previous total found using NN-MULT with
+                   ;; the predecessor of NNY and the same NNX
+                   (else (nn-addn (nn-mult nnx (nn-pred nny)) nnx)))))
+
+(printf "#\n") ;; Added for clarity between tests
+(tester '(nn-mult nn0 nn3))
+(tester '(nn-mult nn3 nn0))
+(tester '(nn-mult nn3 nn4))
+(tester '(nn-mult nn4 nn3))
+(tester '(nn-mult nn2 nn3))
+(tester '(nn-mult '(1 1) nn3))
+(tester '(nn-mult nn2 '(1 1 1)))
+(tester '(nn-mult '(1 1) '(1 1 1)))

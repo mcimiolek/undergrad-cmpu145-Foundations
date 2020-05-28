@@ -1,0 +1,15 @@
+Welcome to DrScheme, version 4.2.1 [3m].
+Language: Swindle; memory limit: 128 megabytes.
+(PARTITION-TO-EQUIV-RELN '((1 2) (3))) ====> ((1 1) (1 2) (2 1) (2 2) (3 3))
+(PARTITION-TO-EQUIV-RELN '((1) (3))) ====> ((1 1) (3 3))
+(PARTITION-TO-EQUIV-RELN '((1 2) (3 4))) ====> ((1 1) (1 2) (2 1) (2 2) (3 3) (3 4) (4 3) (4 4))
+(PARTITION-TO-EQUIV-RELN '((1 2 4) (3))) ====> ((1 1) (1 2) (1 4) (2 1) (2 2) (2 4) (4 1) (4 2) (4 4) (3 3))
+(PARTITION-TO-EQUIV-RELN '((1 2 4) ())) ====> ((1 1) (1 2) (1 4) (2 1) (2 2) (2 4) (4 1) (4 2) (4 4))
+(PARTITION-TO-EQUIV-RELN '((a b) (c d))) ====> ((a a) (a b) (b a) (b b) (c c) (c d) (d c) (d d))
+(PARTITION-TO-EQUIV-RELN '()) ====> ()
+(PARTITION-TO-EQUIV-RELN '((1) (3 4 5))) ====> ((1 1) (3 3) (3 4) (3 5) (4 3) (4 4) (4 5) (5 3) (5 4) (5 5))
+(PARTITION-TO-EQUIV-RELN '((1) (3 4 5) (6 7))) ====> ((1 1) (3 3) (3 4) (3 5) (4 3) (4 4) (4 5) (5 3) (5 4) (5 5) (6 6) (6 7) (7 6) (7 7))
+(PARTITION-TO-EQUIV-RELN '(() (1 2))) ====> ((1 1) (1 2) (2 1) (2 2))
+(PARTITION-TO-EQUIV-RELN '((a b) () (c d))) ====> ((a a) (a b) (b a) (b b) (c c) (c d) (d c) (d d))
+(PARTITION-TO-EQUIV-RELN '((a b) (c d) (e f))) ====> ((a a) (a b) (b a) (b b) (c c) (c d) (d c) (d d) (e e) (e f) (f e) (f f))
+> 

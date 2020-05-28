@@ -1,0 +1,154 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Lab 5
+
+(load "asmt-helper.txt")
+
+;; ----------------------------------------------------------------------------
+;; 1
+;; ----------------------------------------------------------------------------
+;; Define a function, called PERMY, that takes two integer inputs, N and K, 
+;; where 0 <= K <= N and N > 0.  It should return the following integer as its
+;; output:  N * (N-1) * (N-2) * ... * (N-K+1)
+
+
+;;  PERMY
+;; ----------------------------------------
+;;  INPUTS:  N, an integer representing the number of values available for
+;;           initial selection
+;;           K, an integer representing the number of selections made
+;;           where 0 <= K <= N and N > 0
+;;  OUTPUT:  an integer representing the number of permutations possible
+;;           with a group of size N, with K selections made from it
+
+;; counts the number of permutations available with a pool of N elements and
+;; K selctions
+(define permy (lambda (n k)
+                (cond
+                  ;; If K equals 0, returns 1
+                  ((equals? k 0) 1)
+                  ;; multiplies the number of possibilies in the current 
+                  ;; selection by the previous multiplication of selections
+                  (else (* n (permy (- n 1) (- k 1)))))))
+
+(tester '(permy 5 2))
+(tester '(permy 6 2))
+(tester '(permy 5 3))
+(tester '(permy 5 5))
+(tester '(permy 5 4))
+(tester '(permy 4 4))
+(tester '(permy 3 3))
+(tester '(permy 7 6))
+(tester '(permy 10 0))
+
+;; (permy n n) = n!
+
+
+;; ----------------------------------------------------------------------------
+;; 2
+;; ----------------------------------------------------------------------------
+;; Define a function, called COMBY, that takes two integer inputs, N and K, 
+;; where 0 <= K <= N and N > 0.  It should return the following value as its 
+;; output:           N * (N-1) * (N-2) * ... * (N-K+1)
+;;                   ---------------------------------
+;;                      K * (K-1) * (K-2) * ... * 1
+
+
+;;  COMBY
+;; ----------------------------------------
+;;  INPUTS:  N, an integer representing the number of values available for
+;;           initial selection
+;;           K, an integer representing the number of selections made
+;;           where 0 <= K <= N and N > 0
+;;  OUTPUT:  an integer representing the number of combinations possible
+;;           with a group of size N, with K selections made from it
+
+;; counts the number of combinations available with a pool of N elements and
+;; K selctions
+(define comby (lambda (n k);; multiplies the number of possibilies in each selection
+                  ;; by the previous multiplication of selections
+                (cond
+                  ;; If K equals 0, returns 1
+                  ((equals? k 0) 1)
+                  ;; multiplies the number of possibilies in the current 
+                  ;; selection divided by the number of selections remaining  
+                  ;; by the previous multiplications of those values
+                  (else (* (/ n k) (comby (- n 1) (- k 1)))))))
+
+(tester '(comby 6 2))
+(tester '(comby 4 2))
+(tester '(comby 5 3))
+(tester '(comby 7 3))
+(tester '(comby 7 4))
+(tester '(comby 8 4))
+(tester '(comby 5 1))
+(tester '(comby 5 2))
+(tester '(comby 6 2))
+(tester '(comby 10 3))
+(tester '(comby 10 4))
+(tester '(comby 11 4))
+(tester '(comby 11 0))
+(tester '(comby 5 5))
+(tester '(comby 5 4))
+(tester '(comby 5 3))
+(tester '(comby 5 2))
+(tester '(comby 5 1))
+(tester '(comby 5 0))
+
+;; (comby n k) + (comby n k+1) = (comby n+1 k+1)
+
+
+
+;; ----------------------------------------------------------------------------
+;; 3
+;; ----------------------------------------------------------------------------
+;; Define a function, called SUM-COMBIES, that takes a positive integer N as
+;; its only input.  It should return as its output (tester '(comby 5 5))
+;; the following value: (COMBY N 0) + (COMBY N 1) + ... + (COMBY N N).
+
+
+;;  SUM-COMBIES
+;; ----------------------------------------
+;;  INPUTS:  N, an integer representing the number of values available for
+;;           initial selection and the number of combinations (minus one) to
+;;           be added for the total
+;;           where N > 0
+;;  OUTPUT:  an integer representing the number of combinations possible
+;;           with a group of size N, and the number of selections made 
+;;           increasing from 0 to N.
+
+;; Adds the combies of N with every value from 0 to N as the number of 
+;; selctions made from N 
+(define sum-combies (lambda (n)
+                        ;; Uses comby-helper to find the sum of combies for N
+                        (comby-helper n n)))
+
+
+
+;;  COMBY-HELPER
+;; ----------------------------------------
+;;  INPUTS:  N, an integer representing the number of values available for
+;;           initial selection and the number of combinations (minus one) to
+;;           be added for the total
+;;  OUTPUT:  an integer representing the number of combinations possible
+;;           with a group of size N, and the number of selections made 
+;;           increasing from 0 to N.
+
+;; Helps add the combies of N with every value from 0 to N as the number of 
+;; selctions made from N  
+(define comby-helper (lambda (n k)
+                       (cond
+                         ;; If K equals 0 returns 1
+                         ((equals? k 0) 1)
+                         ;; Adds the comby of N and the current K to the total
+                         ;; comby N for all previous Ks
+                         (else (+ (comby n k) (comby-helper n (- k 1)))))))
+
+(tester '(sum-combies 5))
+(tester '(sum-combies 1))
+(tester '(sum-combies 0))
+(tester '(sum-combies 2))
+(tester '(sum-combies 3))
+(tester '(sum-combies 4))
+
+;; is 2^n

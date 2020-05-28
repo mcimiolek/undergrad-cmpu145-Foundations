@@ -1,0 +1,235 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Lab 8
+
+(load "lab7-helper.txt")
+
+;; ----------------------------------------------------------------------------
+;; 1A
+;; ----------------------------------------------------------------------------
+;; Define a function, BIASED-TOSSER, that takes one input, LISTY, that is a 
+;; *finite* list of 0s and 1s representing a binary floating point value.
+
+(problem 1)
+
+;;  BIASED-TOSSER
+;; ----------------------------------------
+;;  INPUTS: LISTY, a *finite* list of 0s and 1s representing a binary floating 
+;;                 point value
+;;  OUTPUT: A 1 (heads) with probability equal to the fraction represented by 
+;;          LISTY; 0 (tails) otherwise.
+
+;; Returns either 1 or 0 based off of using a "standard coin" to eventually get
+;; the same results a "biased coin" would of a specific weight
+(define biased-tosser 
+  (lambda (listy)
+    (cond
+      ;; If LISTY is empty return 0 as eventually flipping enough coins you
+      ;; would get a 1 and the rest of the non-present values that would be
+      ;; in LISTY if shown are 0.
+      ((empty? listy) 0)
+      (else
+        ;; Chooses either 1 or 0 randomly and stores it in CUR
+        (let ((cur (random 2)))
+          (cond
+            ;; If CUR < the first value of LISTY, return 1 to represent how the
+            ;; biased coin would be a head
+            ((< cur (first listy)) 1)
+            ;; If CUR > the first value of LISTY, return 0 to represent how the
+            ;; biased coin would be a tails
+            ((> cur (first listy)) 0)
+            ;; If CUR = the first value of LSITY, flip another coin and compare
+            ;; it to the next value in LISTY as it cannot yet be decided if it
+            ;; would be a heads or tail on the weighted coin
+            (else (biased-tosser (rest listy)))))))))
+
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(tester '(biased-tosser '(1 0 1)))
+(printf "\n") ;; Added for clarity between tests
+
+
+
+;; ----------------------------------------------------------------------------
+;; 1B
+;; ----------------------------------------------------------------------------
+;; Create generate functions for several different values of the bias fraction.
+
+
+;;  BIAS-5-8
+;; ----------------------------------------
+;;  INPUTS: none (for use in GEN-AND-TEST)
+;;  OUTPUT: A 1 (heads) about 5/8th of the time and 0 (tails) otherwise.
+
+;; Returns a 1 (heads) or 0 (tails) as if the coin were weighted to be heads 
+;; 5/8th of the time
+(define bias-5-8 
+  (lambda ()
+    ;; Uses BIASED-TOSSER to find a 1 or 0 using the list representing 5/8th in
+    ;; binary
+    (biased-tosser '(1 0 1))))
+
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(tester '(bias-5-8))
+(printf "\n") ;; Added for clarity between tests
+
+
+;;  BIAS-3-4
+;; ----------------------------------------
+;;  INPUTS: none (for use in GEN-AND-TEST)
+;;  OUTPUT: A 1 (heads) about 3/4th of the time and 0 (tails) otherwise.
+
+;; Returns a 1 (heads) or 0 (tails) as if the coin were weighted to be heads 
+;; 3/4th of the time
+(define bias-3-4 
+  (lambda ()
+    ;; Uses BIASED-TOSSER to find a 1 or 0 using the list representing 3/4th in
+    ;; binary
+    (biased-tosser '(1 1))))
+    
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(tester '(bias-3-4))
+(printf "\n") ;; Added for clarity between tests
+    
+    
+;;  BIAS-11-16
+;; ----------------------------------------
+;;  INPUTS: none (for use in GEN-AND-TEST)
+;;  OUTPUT: A 1 (heads) about 11/16th of the time and 0 (tails) otherwise.
+
+;; Returns a 1 (heads) or 0 (tails) as if the coin were weighted to be heads 
+;; 11/16th of the time
+(define bias-11-16 
+  (lambda ()
+    ;; Uses BIASED-TOSSER to find 1 or 0 using the list representing 13/16th in
+    ;; binary
+    (biased-tosser '(1 0 1 1))))
+
+
+;;  BIAS-1-32
+;; ----------------------------------------
+;;  INPUTS: none (for use in GEN-AND-TEST)
+;;  OUTPUT: A 1 (heads) about 1/32nd of the time and 0 (tails) otherwise.
+
+;; Returns a 1 (heads) or 0 (tails) as if the coin were weighted to be heads 
+;; 1/32nd of the time
+(define bias-1-32 
+  (lambda ()
+    ;; Uses BIASED-TOSSER to find 1 or 0 using the list representing 1/32nd in
+    ;; binary
+    (biased-tosser '(0 0 0 0 1))))
+
+
+;;  BIAS-2-3
+;; ----------------------------------------
+;;  INPUTS: none (for use in GEN-AND-TEST)
+;;  OUTPUT: A 1 (heads) about 2/3rds of the time and 0 (tails) otherwise.
+
+;; Returns a 1 (heads) or 0 (tails) as if the coin were weighted to be heads 
+;; 2/3rds of the time
+(define bias-2-3 
+  (lambda ()
+    ;; Uses BIASED-TOSSER to find 1 or 0 using the list representing 2/3rds in
+    ;; binary
+    (biased-tosser '(1 0 1 0 1 0 1 0 1 0 1 0 1 0 1))))
+
+
+;;  BIAS-3-7
+;; ----------------------------------------
+;;  INPUTS: none (for use in GEN-AND-TEST)
+;;  OUTPUT: A 1 (heads) about 3/7nd of the time and 0 (tails) otherwise.
+
+;; Returns a 1 (heads) or 0 (tails) as if the coin were weighted to be heads 
+;; 3/7th of the time
+(define bias-3-7 
+  (lambda ()
+    ;; Uses BIASED-TOSSER to find 1 or 0 using the list representing 3/7th in
+    ;; binary
+    (biased-tosser '(0 1 1 0 1 1 0 1 1 0 1 1 0 1 1))))
+
+
+;;  IS-ONE?
+;; ----------------------------------------
+;;  INPUTS: INTY, a 1 or a 0 representing heads or tails respectively
+;;  OUTPUT: #t if the input is 1, #f otherwise.
+
+;; Returns true if the input is 1 (heads), or otherwise false
+(define is-one?
+  (lambda (inty)
+      (equals? inty 1)))
+
+(tester '(is-one? 1))
+(tester '(is-one? 0))
+(tester '(is-one? -1)) ;; Checks it works with value other than 0 as wrong input
+(printf "\n") ;; Added for clarity between tests
+
+
+
+;; ----------------------------------------------------------------------------
+;; 1C
+;; ----------------------------------------------------------------------------
+;; Test genration functions using GEN-AND-TEST.
+
+(tester '(gen-and-test 10000 bias-5-8 is-one?))
+(printf "\n") ;; Added for clarity between tests
+(tester '(gen-and-test 10000 bias-3-4 is-one?))
+(printf "\n") ;; Added for clarity between tests
+(tester '(gen-and-test 10000 bias-11-16 is-one?))
+(printf "\n") ;; Added for clarity between tests
+(tester '(gen-and-test 10000 bias-1-32 is-one?))
+(printf "\n") ;; Added for clarity between tests
+(tester '(gen-and-test 10000 bias-2-3 is-one?))
+(printf "\n") ;; Added for clarity between tests
+(tester '(gen-and-test 10000 bias-3-7 is-one?))
+
+;; LISTY would be 1
+
+
+
+;; ----------------------------------------------------------------------------
+;; 2
+;; ----------------------------------------------------------------------------
+;; Estimating the Expected Value of the Number of Times BIASED-TOSSER must toss 
+;; the fair coin to determine a value.
+
+(problem 2)
+
+;;  BIASED-COUNTER
+;; ----------------------------------------
+;;  INPUTS: LISTY, a *finite* list of 0s and 1s representing a binary floating 
+;;                 point value
+;;  OUTPUT: the number of coin tosses required for a deviation from LISTY
+
+;; NEEDED TO DO EMPTY CASE
+(define biased-counter 
+  (lambda (listy)
+    (let ((cur (random 2)))
+      ((= cur (first listy)) (+ 1 (biased-counter (rest listy))))
+      (else 1))))
+
+(tester '(biased-counter '(1 0 1)))

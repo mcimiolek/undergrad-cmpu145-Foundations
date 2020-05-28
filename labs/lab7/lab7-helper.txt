@@ -1,0 +1,161 @@
+;;; ===============================
+;;;  CMPU-145, Spring 2017
+;;;  Lab 7 Helper
+;;; ===============================
+
+(load "asmt-helper.txt")
+
+;;; This file contains solutions from Lab 6, without
+;;; the tester expressions, and it also contains the comby
+;;; function from Lab 5--the function that computes
+;;; n-choose-k.
+
+
+
+;;;  N-CHOOSE-K  
+;;; ---------------------------------------------
+;;;  INPUTS:  N, K, non-negative integers with N >= K
+;;;  OUTPUT:  The value N!/[K!(N-K)!] = N*(N-1)*...*(N-K+1) / K!
+
+(define n-choose-k
+  (lambda (n k)
+    ;; There are K factors in both numerator and denominator;
+    ;; so once again we use K as our counter.
+    (cond
+      ;; Base Case:  K <= 0
+      ((<= k 0)
+       ;; Multiplicative identity
+       1)
+      ;; Recursive Case:  K > 0
+      (#t
+       (* n        ;; factor for numerator:  N
+          (/ 1 k)  ;; factor for denominator:  K
+          (n-choose-k (- n 1) 
+                      (- k 1)) ;; rec. function call gets all the rest
+          )))))
+
+		  
+		  
+;;; ************
+;;; Below this are solutions from Lab 6
+;;; ************
+		  
+		  
+;;; =====================================================
+;;; (problem "1:  Randomly choose one item from a list")
+;;; =====================================================
+
+;;;  RAND-CHOOSE-ONE
+;;; -------------------------------------
+;;;  INPUT:  LISTY, a list of items (usually with no repeats)
+;;;  OUTPUT:  A randomly chosen item from that list
+
+(define rand-choose-one
+  (lambda (listy)
+    (nth listy (random (length listy)))))
+
+;;; =====================================================
+;;; (problem "2:  RAND-CHOOSE-K")
+;;; =====================================================
+
+;;;  RAND-CHOOSE-K
+;;; ----------------------------------
+;;;  INPUTS:  K, a non-negative integer
+;;;           LISTY, a list of at least K items
+;;;  OUTPUT:  A list of K items chosen randomly from LISTY where
+;;;           order doesn't matter and repetition NOT allowed.
+
+(define rand-choose-k
+  (lambda (k listy)
+    (cond
+      ;; Base Case:  K <= 0
+      ((<= k 0)
+       ;; A list of 0 items
+       ())
+      ;; Error Case:  K > 0 but LISTY is empty :o
+      ((null? listy)
+       ;; Just return a symbol signifying that an error happened
+       'error)
+      ;; Recursive Case:  K > 0 and LISTY non-empty
+      (#t
+       ;; Pick one item from LISTY
+       (let ((rndy (rand-choose-one listy)))
+         ;; And then cons it onto the front of 
+         (cons rndy
+               ;; a list of (k-1) items chosen from
+               (rand-choose-k (- k 1) 
+                              ;; the remaining items in listy
+                              (remove rndy listy))))))))
+
+
+;;; ==============================
+;;; (problem "3:  Using GEN-AND-TEST")
+;;; ==============================
+
+;;;  GEN-AND-TEST
+;;; ------------------------------------
+;;;  INPUTS:  N, a non-negative integer
+;;;           GEN, a function of one input that is used to generate random
+;;;                 instances of some event (e.g., tossing a die, dealing a card)
+;;;           TEST, a function that tests whether some given instance has some
+;;;                 property (e.g., die > three, or card is a face card)
+;;;  OUTPUT:  The fraction of N random trials in which the randomly generated
+;;;           instances satisfied the TEST.
+
+(define gen-and-test
+  (lambda (n gen test)
+    ;; COUNT is a counter variable
+    (let ((count 0))
+      ;; DOTIMES executes its body N times
+      (dotimes (i n)
+               ;; Use (GEN) to generate a random instance;
+               ;; Use TEST to determine whether that instance has the 
+               ;; desired property
+               (if (test (gen))
+                   ;; If it does, then destructively increment the counter!
+                   (set! count (+ count 1))))
+      ;; After the DOTIMES loop finishes, return the fraction of the 
+      ;; trials that satisfied the TEST.
+      (/ count n 1.0))))
+
+;;;  TOSS-DIE
+;;; -------------------------
+;;;  INPUTS:  None
+;;;  OUTPUT:  A randomly generated number from 1 to 6
+
+(define toss-die
+  (lambda ()
+    (+ 1 (random 6))))
+
+;;;  TEST-DIE
+;;; --------------------------
+;;;  INPUT:  A number from 1 to 6
+;;;  OUTPUT:  #t if that number is either 5 or 6
+
+(define test-die
+  (lambda (die)
+    (or (= die 5) (= die 6))))
+
+;;; ----------------------
+
+;;;  TOSS-PAIR-DICE
+;;; ----------------------------
+;;;  INPUTS:  None
+;;;  OUTPUT:  A two-element list containing a pair of randomly generated
+;;;           numbers from 1 to 6
+
+(define toss-pair-dice
+  (lambda ()
+    ;; Note the use of TOSS-DIE
+    (list (toss-die) (toss-die))))
+
+;;;  TEST-PAIR-DICE
+;;; ----------------------------
+;;;  INPUT:  A two-element list containing a pair of numbers each between 1 and 6
+;;;  OUTPUT:  #t if the sum of those two numbers is at least 8
+
+(define test-pair-dice
+  (lambda (pr)
+    (>= (+ (first pr) (second pr))
+        8)))
+

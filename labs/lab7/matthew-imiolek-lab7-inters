@@ -1,0 +1,32 @@
+Welcome to DrScheme, version 4.2.1 [3m].
+Language: Swindle; memory limit: 128 megabytes.
+
+------------------------
+  1
+------------------------
+
+(is-full-house? '(1 1 1 2 2)) ====> #t
+(is-full-house? '(3 4 4 3 3)) ====> #t
+(is-full-house? '(3 4 3 4 3)) ====> #t
+(is-full-house? '(4 4 3 3 3)) ====> #t
+(is-full-house? '(3 4 4 4 3)) ====> #t
+(is-full-house? '(3 4 4 6 7)) ====> #f
+
+------------------------
+  2
+------------------------
+
+(test-full-house-wr 259896) ====> 0.0015275340905593006
+
+------------------------
+  3
+------------------------
+
+(is-four-of-a-kind? '(1 1 1 1 2)) ====> #t
+(is-four-of-a-kind? '(1 1 1 2 1)) ====> #t
+(is-four-of-a-kind? '(1 1 2 1 1)) ====> #t
+(is-four-of-a-kind? '(1 2 1 1 1)) ====> #t
+(is-four-of-a-kind? '(2 1 1 1 1)) ====> #t
+(is-four-of-a-kind? '(1 1 1 5 7)) ====> #f
+(test-four-of-a-kind-wr 259896) ====> 0.00020008003201280514
+> 

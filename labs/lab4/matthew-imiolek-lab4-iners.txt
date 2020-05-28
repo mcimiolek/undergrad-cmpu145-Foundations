@@ -1,0 +1,25 @@
+Welcome to DrScheme, version 4.2.1 [3m].
+Language: Swindle; memory limit: 128 megabytes.
+(nn-succ nn0) ====> (1)
+(nn-succ nn1) ====> (1 1)
+(nn-succ nn2) ====> (1 1 1)
+(nn-succ nn3) ====> (1 1 1 1)
+(nn-succ '(1 1 1 1)) ====> (1 1 1 1 1)
+(make-nn 0) ====> ()
+(make-nn 1) ====> (1)
+(make-nn 2) ====> (1 1)
+(make-nn 3) ====> (1 1 1)
+(make-nn 4) ====> (1 1 1 1)
+(nn-zero? 0) ====> #f
+(nn-zero? nn0) ====> #t
+(nn-zero? nn3) ====> #f
+(nn-pred nn1) ====> ()
+(nn-pred nn2) ====> (1)
+(nn-pred nn3) ====> (1 1)
+(nn-pred '(1 1 1 1)) ====> (1 1 1)
+(nn-addn nn0 nn1) ====> (1)
+(nn-addn nn1 nn0) ====> (1)
+(nn-addn nn2 nn2) ====> (1 1 1 1)
+(nn-addn nn1 nn3) ====> (1 1 1 1)
+(nn-addn a b) ====> . . asmt-helper.txt:51:4: reference to undefined identifier: a
+> 

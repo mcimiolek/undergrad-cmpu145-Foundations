@@ -1,0 +1,46 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Homework 6
+
+(load "asmt-helper.txt")
+
+
+;; ----------------------------------------------------------------------------
+;; 1
+;; ----------------------------------------------------------------------------
+;; Define a function gen-all-perms that takes a list of items listy as its only
+;; input. (You may assume that listy does not contain any duplicates.) It 
+;; should return as its output a list of all permutations of the input list, 
+;; where each permutation contains all of the elements of the input list, but
+;; possibly in a different order, as illustrated below.
+
+;;  GEN-ALL-PERMS
+;; ----------------------------------------
+;;  INPUTS: LISTY, a list of items without any duplicates
+;;  OUTPUT: A list with all permutations of the original list
+
+;; Generates a list with all the permutations of a given list LSTY
+(define gen-all-perms (lambda (listy)
+                        (cond
+                          ;; If empty returns the list of any empty list
+                          ;; (affects the format of the output)
+                          ((empty? listy) '(()))
+                          ;; Remvoes extra parenthesis which are otherwise
+                          ;; around each individual value
+                         (else (apply append
+                                ;; Takes the current item in listy and removes
+                                ;; it from listy which it then attaches to all
+                                ;; the permutations of the list without it
+                                (map (lambda (frst)
+                                       (map (lambda (lst)
+                                              ;; Attaches the "current" item
+                                              ;; to the permuations
+                                              (cons frst lst))
+                                            ;; Creates the list of permutations
+                                            (gen-all-perms 
+                                             (remove frst listy)))) listy))))))
+
+(tester '(gen-all-perms '(1 2 3)))
+(tester '(gen-all-perms '(1 2)))
+(length (tester '(gen-all-perms '(1 2 3 4))))
+(length (tester '(gen-all-perms '(1 2 3 4 5))))

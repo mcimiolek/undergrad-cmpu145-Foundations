@@ -1,0 +1,17 @@
+Welcome to DrScheme, version 4.2.1 [3m].
+Language: Swindle; memory limit: 128 megabytes.
+(get-func-value 2 '((2 4) (3 4) (1 4) (6 4))) ====> 4
+(get-func-value '5 '((1 5) (3 4) (5 4) (2 8))) ====> 4
+(get-func-value '(5 2) '(((5 2) (3 4)) (3 4) (5 4) (2 8))) ====> (3 4)
+(get-func-value 'a '((b c) (f g) (a m) (l k))) ====> m
+(get-func-value '6 '((5 4) (3 4) (1 4) (6 4))) ====> 4
+(get-func-value 'c '((a 4) (3 d) (c 4) (2 4))) ====> 4
+(image '(2) '((2 4) (3 4) (1 4) (6 4))) ====> (4)
+(image '(2 3 6) '((2 4) (3 5) (1 6) (6 7))) ====> (4 5 7)
+(image '(4 3) '((1 5) (2 6) (3 7) (4 8))) ====> (8 7)
+(image '(4) '((1 5) (2 6) (3 7) (4 8))) ====> (8)
+(image '(4 3) '((1 5) (2 5) (3 7) (4 7))) ====> (7)
+(image '(a b) '((a e) (b f) (c g) (d h))) ====> (e f)
+(image '(a b c d) '((a e) (b e) (c e) (d e))) ====> (e)
+(image '(a 1 b 2) '((a f) (b 4) (1 3) (2 e))) ====> (f 3 4 e)
+> 

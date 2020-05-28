@@ -1,0 +1,160 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Lab 4
+
+(load "asmt-helper.txt")
+
+;; ----------------------------------------------------------------------------
+;; A
+;; ----------------------------------------------------------------------------
+;; Define global variables for later use in testing
+
+(define nn0 '())
+(define nn1 '(1))
+(define nn2 '(1 1))
+(define nn3 '(1 1 1))
+
+
+
+;; ----------------------------------------------------------------------------
+;; B
+;; ----------------------------------------------------------------------------
+;; Define the successor function, NN-SUCC, for this representation of natural 
+;; numbers.
+
+
+;;  NN-SUCC
+;; ----------------------------------------
+;;  INPUTS:  NNL, a list representing a natural number in ones
+;;  OUTPUT:  A list representing a the succesor of the value represented in NNL
+
+;; Attaches a 1 to represent a succesor to the list representation of a natural
+;; number in nnl
+(define nn-succ (lambda (nnl)
+                  ;; attaches a 1, which represents the succesor, to NNL
+                  (cons 1 nnl)))
+
+(tester '(nn-succ nn0))
+(tester '(nn-succ nn1))
+(tester '(nn-succ nn2))
+(tester '(nn-succ nn3))
+(tester '(nn-succ '(1 1 1 1)))
+
+
+
+;; ----------------------------------------------------------------------------
+;; C
+;; ----------------------------------------------------------------------------
+;; Define a function, called MAKE-NN, that takes an "ordinary" number as its 
+;; input, and returns as its output the corresponding list-based natural number
+
+
+;;  MAKE-NN
+;; ----------------------------------------
+;;  INPUTS:  ORDINARY, an ordinary number
+;;  OUTPUT:  A list representing ORDINARY as a list-based natural number
+
+;; Convers a standard format number in a list form of that natural number
+(define make-nn (lambda (ordinary)
+                  (cond
+                    ;; if ordinary equals zero returns an empty number
+                    ((equal? 0 ordinary) '())
+                    ;; adds a one to a list and then reduces the value of
+                    ;; ordinary by one to represent the list version's value
+                    ;; has gone up one
+                    (else (nn-succ (make-nn (- ordinary 1)))))))
+
+(tester '(make-nn 0))
+(tester '(make-nn 1))
+(tester '(make-nn 2))
+(tester '(make-nn 3))
+(tester '(make-nn 4))
+
+
+
+;; ----------------------------------------------------------------------------
+;; D
+;; ----------------------------------------------------------------------------
+;; Define a function, called NN-ZERO?, that takes a list-based natural number 
+;; as its input. It should return #t if that input is the list-based version of
+;; zero; otherwise, #f.
+
+
+;;  NN-ZERO?
+;; ----------------------------------------
+;;  INPUTS:  NNL, a list representing a natural number in ones
+;;  OUTPUT:  #t if NNL represents zero, otherwise #f
+
+;; Returns #t if nnl is an empty list and #f otherwise
+(define nn-zero? (lambda (nnl)
+                     ;; checks if nnl is equal to nnl to return #t or #f
+                     (equal? nnl '())))
+
+(tester '(nn-zero? 0)) ;;Testing to make returns #f with normal zero
+(tester '(nn-zero? nn0))
+(tester '(nn-zero? nn3))
+
+
+
+;; ----------------------------------------------------------------------------
+;; E
+;; ----------------------------------------------------------------------------
+;; Define a function, called NN-PRED, that implements the "predecessor" 
+;; function. It should take a list-based natural number as its input and return
+;; that number's predecessor.
+
+
+;;  NN-PRED
+;; ----------------------------------------
+;;  INPUTS:  NNL, a list representing a natural number in ones
+;;  OUTPUT:  A list representing the predecessor of the value represented in 
+;;           NNL.
+
+;; Returns the predecessor value in nnl
+(define nn-pred (lambda (nnl)
+                  ;; returns rest of nnl to remove the first 1 of the nnl
+                  ;; to return the predecessor value
+                  (rest nnl)))
+
+(tester '(nn-pred nn1))
+(tester '(nn-pred nn2))
+(tester '(nn-pred nn3))
+(tester '(nn-pred '(1 1 1 1)))
+
+
+
+;; ----------------------------------------------------------------------------
+;; F 
+;; ----------------------------------------------------------------------------
+;; Define a function, called NN-ADDN, that takes two list-based natural numbers
+;; as its input, and generates their sum as its output
+
+
+;;  NN-ADDN
+;; ----------------------------------------
+;;  INPUTS:  NNL1, a list representing a natural number in ones of the first
+;;           number to be added
+;;           NNL2, a list representing a natural number in ones of the second
+;;           number to be added
+;;  OUTPUT:  A list representing the total value of NNL1 and NNL2 as a list-
+;;           based natural number
+
+;; adds the list values in nnl1 and nnl2 together into one list
+(define nn-addn (lambda (nnl1 nnl2)
+                   (cond
+                     ;; if nnl2 is empty returns the value of nnl1 because
+                     ;; it would be the only list with any values and thus the
+                     ;; total of both nnl2 and nnl1
+                     ((nn-zero? nnl2) nnl1)
+                     ;; goes through and for every value in creates the                     
+                     ;; succesor of nn-addn with nn1 and the predecessor of
+                     ;; nn2 keeping the same total value, even though the
+                     ;; values distribution changes
+                     (else (nn-succ (nn-addn nnl1 (nn-pred nnl2)))))))
+
+(tester '(nn-addn nn0 nn1))
+(tester '(nn-addn nn1 nn0))
+(tester '(nn-addn nn2 nn2))
+(tester '(nn-addn nn1 nn3))
+(tester '(nn-addn a b)) ;; Negative input. Let it throw an error since that
+                        ;; tells the user they're wrong

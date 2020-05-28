@@ -1,0 +1,103 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Homework 3
+
+(load "asmt-helper.txt")
+                                                                                
+;;------------------------------------------------------------------------------
+;;  PROBLEM 1:  Partitions and Equivalence Relations
+;;------------------------------------------------------------------------------
+
+;;PARTITION-TO-EQIV-RELN
+;;------------------------------------------------------------------------------
+;;INPUTS: PART (A list of partitions)
+;;OUTPUTS: a set of ordered pairs representing the equivalence relation of all
+;;         the partitions when together
+
+;; Turns a partition into an equivalence relation
+(define PARTITION-TO-EQUIV-RELN (lambda (PART)
+                                 (cond
+                                   ;; Returns empty if theres an empty partition
+                                   ((empty? PART) '())
+                                   ;; Takes each partition and makes it into a
+                                   ;; list of ordered pairs (through EQUIV-MAKER)
+                                   ;; that are needed to
+                                   ;; make that partition an equivalence relation
+                                   ;; puts those lists into one list, and then
+                                   ;; takes each of those values out of that list
+                                   ;; (through SIMPLIFIER) so they all end up in 
+                                   ;; the same final set
+                                   (else 
+                                    (append 
+                                     ;; Takes values out of the list so each
+                                     ;; ordered pair ends in the same set
+                                     ;; and makes the equivalence relation of
+                                     ;; the first partion
+                                     (SIMPLIFIER (EQUIV-MAKER (first PART))) 
+                                     ;; Repeats for remaining partitions
+                                     (PARTITION-TO-EQUIV-RELN (rest PART)))))))
+
+
+
+;;EQUIV-MAKER
+;;------------------------------------------------------------------------------
+;;INPUTS: SET (A partition with individual values)
+;;OUTPUTS: a list of all the pairs required for an equivalence relation of one
+;;         partition
+
+;; Helper function which makes a specific partition into an equivalence relation
+(define EQUIV-MAKER (lambda (SET)
+                      ;; Takes each value of SET and runs it through a another
+                      ;; map which gets the each other value in SET and makes
+                      
+                      ;; an ordered pair with them
+                      (map 
+                       (lambda (fSET) 
+                         (map (lambda (fSETb) (list fSET fSETb)) SET)) SET)))
+
+
+
+;;SIMPLIFIER
+;;------------------------------------------------------------------------------
+;;INPUTS: BIG (A set of lists of ordered pairs required for a set which is an
+;;        equivalence relation)
+;;OUTPUTS: A set of ordered pairs which make up an equivalence relation
+
+;; Helper function which makes all values end up in one final set
+(define SIMPLIFIER (lambda (BIG) ;;Named BIG becasue it removes extra ()
+                     (cond
+                       ;; Returns an empty list if there are no values in BIG
+                       ((empty? BIG) '())
+                       ;; If the first value in the first value of BIG is a
+                       ;; list, pulls the first value of BIG one level higher
+                       ;; in BIG, or out of a lower level list
+                       ((list? (first (first BIG))) 
+                        (append (first BIG) (SIMPLIFIER (rest BIG))))
+                       ;; If not, continues going through BIG till it's empty
+                       (else (SIMPLIFIER (rest BIG))))))
+
+
+;; Tests if one partition has two values and the other has one
+(tester '(PARTITION-TO-EQUIV-RELN '((1 2) (3))))
+;; Tests if both partitions have one value
+(tester '(PARTITION-TO-EQUIV-RELN '((1) (3))))
+;; Tests if both partitions have two values
+(tester '(PARTITION-TO-EQUIV-RELN '((1 2) (3 4))))
+;; Tests if one partition has three values and the other has one
+(tester '(PARTITION-TO-EQUIV-RELN '((1 2 4) (3))))
+;; Tests for an empty partition at the end
+(tester '(PARTITION-TO-EQUIV-RELN '((1 2 4) ())))
+;; Tests for non-numerical forms of values
+(tester '(PARTITION-TO-EQUIV-RELN '((a b) (c d))))
+;; Tests empty set
+(tester '(PARTITION-TO-EQUIV-RELN '()))
+;; Tests one and then three values
+(tester '(PARTITION-TO-EQUIV-RELN '((1) (3 4 5))))
+;; Tests more than two partitions
+(tester '(PARTITION-TO-EQUIV-RELN '((1) (3 4 5) (6 7))))
+;; Tests first partition is empty
+(tester '(PARTITION-TO-EQUIV-RELN '(() (1 2))))
+;; Tests if a middle partition is empty
+(tester '(PARTITION-TO-EQUIV-RELN '((a b) () (c d))))
+;; Tests more than two partitions of alternate input
+(tester '(PARTITION-TO-EQUIV-RELN '((a b) (c d) (e f))))

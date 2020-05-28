@@ -1,0 +1,185 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Lab 7
+
+(load "lab7-helper.txt")
+
+
+;; ----------------------------------------------------------------------------
+;; 1
+;; ----------------------------------------------------------------------------
+;; Define a function, called IS-FULL-HOUSE?, that takes a five-element list as 
+;; its only input.  It should return #t if that input list has a full house, 
+;; as follows.
+
+(problem 1)
+
+;;  IS-FULL-HOUSE?
+;; ----------------------------------------
+;;  INPUTS: LST, a five element list
+;;  OUTPUT: A boolean true if there are three of one number and two of another 
+;;          in the given list
+
+;; Checks if a hand meets the requirments to be a full house
+(define is-full-house? (lambda (lst)
+                         ;; Creates a list ordered from greatest to least
+                         (let ((sLst (sort lst <=)))
+                           (cond
+                             ;; Checks if after being ordered from least to
+                             ;; greatest the first three are the same and the
+                             ;; last two are the same, and returns true if so
+                             ((and (= (first sLst) 
+                                      (third sLst)) 
+                                   (= (fourth sLst) 
+                                      (fifth sLst))))
+                             ;; Checks if after being ordered from least to
+                             ;; greatest the first two are the same and the
+                             ;; last three are the same, and returns true if so
+                             ((and (= (third sLst) 
+                                      (fifth sLst)) 
+                                   (= (first sLst) 
+                                      (second sLst))))
+                             ;; Otherwise returns false
+                             (else false)))))
+
+(tester '(is-full-house? '(1 1 1 2 2)))
+(tester '(is-full-house? '(3 4 4 3 3)))
+(tester '(is-full-house? '(3 4 3 4 3)))
+(tester '(is-full-house? '(4 4 3 3 3)))
+(tester '(is-full-house? '(3 4 4 4 3)))
+(tester '(is-full-house? '(3 4 4 6 7)))
+
+
+
+;; ----------------------------------------------------------------------------
+;; 2
+;; ----------------------------------------------------------------------------
+;; For this problem, you will define a function that randomly generates some 
+;; number of five-card hands and reports back the percentage of hands that 
+;; turned out to be full houses.
+
+(problem 2)
+
+(define *deck* '(1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 8 8 8
+                   8 9 9 9 9 10 10 10 10 11 11 11 11 12 12 12 12 13 13 13 13))
+
+
+;;  TEST-FULL-HOUSE-ACC
+;; ----------------------------------------
+;;  INPUTS: NUM, the number of hands to deal
+;;          ACC, an accumulator representing the number of full houses
+;;  OUTPUT: The number of hands that were full houses
+
+;; Helper function to count how many hands are full houses
+(define test-full-house-acc (lambda (num acc)
+                              (cond
+                                ;; If NUM is 0 returns the value of ACC
+                                ((equals? num 0) acc)
+                                ;; Checks if a randomly generated hand (using
+                                ;; IS-FULL-HOUSE? and RAND-CHOOSE-K) is a
+                                ;; full house and increases ACC if so, and
+                                ;; reduces NUM
+                                ((is-full-house? (rand-choose-k 5 *deck*))
+                                 (test-full-house-acc (- num 1) (+ acc 1)))
+                                ;; if not tests a new hand, reducing NUM
+                                (else (test-full-house-acc (- num 1) acc)))))
+
+;;(tester '(test-full-house-acc 2000000 0))
+
+
+;;  TEST-FULL-HOUSE-WR
+;; ----------------------------------------
+;;  INPUTS: NUM, the number of hands to deal
+;;  OUTPUT: The ratio of hands that were full houses
+
+;; Public function for user ease to test how many hands are full houses
+;; Uses TEST-FULL-HOUSE-ACC for most of the work
+(define test-full-house-wr (lambda (num)
+                             ;; Divides the result from TEST-FULL-HOUSE-ACC
+                             ;; by the original number of hands to be tested
+                             ;; returning the ration of hands that were full
+                             ;; houses
+                             (/ (test-full-house-acc num 0) (* 1.0 num))))
+
+(tester '(test-full-house-wr 259896))
+
+
+
+;; ----------------------------------------------------------------------------
+;; 3
+;; ----------------------------------------------------------------------------
+;; Do the same sort of testing for FOUR-OF-A-KIND hands.
+
+(problem 3)
+
+;;  IS-FOUR-OF-A-KIND?
+;; ----------------------------------------
+;;  INPUTS: LST, a five element list
+;;  OUTPUT: A boolean true if there are four of one number in the given list
+
+;; Checks if a hand meets the requirments to be a four of a kind
+(define is-four-of-a-kind? (lambda (lst)
+                             ;; Creates a list ordered from greatest to least
+                         (let ((sLst (sort lst <=)))
+                           (cond
+                             ;; Checks if after being ordered from least to
+                             ;; greatest the first four are the same and 
+                             ;; returns
+                             ;; true if so
+                             ((= (first sLst)
+                                 (fourth sLst))) 
+                             ;; Checks if after being ordered from least to
+                             ;; greatest the last four are the same and returns
+                             ;; true if so
+                             ((= (fifth sLst) 
+                                 (second sLst)))
+                             ;; Otherwise returns false
+                             (else false)))))
+
+(tester '(is-four-of-a-kind? '(1 1 1 1 2)))
+(tester '(is-four-of-a-kind? '(1 1 1 2 1)))
+(tester '(is-four-of-a-kind? '(1 1 2 1 1)))
+(tester '(is-four-of-a-kind? '(1 2 1 1 1)))
+(tester '(is-four-of-a-kind? '(2 1 1 1 1)))
+(tester '(is-four-of-a-kind? '(1 1 1 5 7)))
+
+
+;;  TEST-FOUR-OF-A-KIND-ACC
+;; ----------------------------------------
+;;  INPUTS: NUM, the number of hands to deal
+;;          ACC, an accumulator representing the number of four of kinds in NUM
+;;  OUTPUT: The number of hands that were four of a kind
+
+;; Helper function to count how many hands are four of a kind
+(define test-four-of-a-kind-acc (lambda (num acc)
+                              (cond
+                                ;; If NUM is 0 returns the value of ACC
+                                ((equals? num 0) acc)
+                                ;; Checks if a randomly generated hand (using
+                                ;; IS-FOUR-OF-A-KIND? and RAND-CHOOSE-K) is a
+                                ;; four of a kind and increases ACC if so, and
+                                ;; reduces NUM
+                                ((is-four-of-a-kind? (rand-choose-k 5 *deck*))
+                                 (test-four-of-a-kind-acc (- num 1) (+ acc 1)))
+                                ;; if not tests a new hand, reducing NUM
+                                (else 
+                                 (test-four-of-a-kind-acc (- num 1) acc)))))
+
+;; (tester '(test-four-of-a-kind-acc 2598960 0))
+
+
+;;  TEST-FOUR-OF-A-KINDE-WR
+;; ----------------------------------------
+;;  INPUTS: NUM, the number of hands to deal
+;;  OUTPUT: The ratio of hands that were four of a kind
+
+;; Public function for user ease to test how many hands are full houses
+;; Uses TEST-FOUR-OF-A-KIND-ACC for most of the work
+(define test-four-of-a-kind-wr (lambda (num)
+                             ;; Divides the result from TEST-FOUR-OF-A-KIND-ACC
+                             ;; by the original number of hands to be tested
+                             ;; returning the ration of hands that were four
+                             ;; of a kind
+                             (/ (test-four-of-a-kind-acc num 0) (* 1.0 num))))
+
+(tester '(test-four-of-a-kind-wr 259896))

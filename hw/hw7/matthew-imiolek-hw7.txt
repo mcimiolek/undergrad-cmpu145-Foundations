@@ -1,0 +1,213 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Homework 7
+
+(load "hw7-helper.txt")
+
+
+;; ----------------------------------------------------------------------------
+;; 1
+;; ----------------------------------------------------------------------------
+;; Define a function, called rand-full-house, that takes no inputs. It should 
+;; generate as its output a list of five cards (i.e., numbers from 0 to 51)
+;; that has a “full house” (i.e., 3 cards of one rank plus two cards of 
+;; another rank).
+
+(problem 1)
+
+;; RAND-FULL-HOUSE
+;; ----------------------------------------
+;;  INPUTS: none
+;;  OUTPUT: A list of five cards that represents a full house
+
+
+;; Pic ks a random full house from a deck of cards
+(define rand-full-house 
+  (lambda ()
+    ;; chooses two ranks randomly from ranks
+    (let* ((ranks (rand-choose-k 2 *ranks*))
+           ;; creates an integer from the first value one less than the 
+           ;; original to avoid off by one error
+           (frst (- (rank (first ranks)) 1))
+           ;; creates an integer from the second value one less than the 
+           ;; original to avoid off by one error
+           (scnd (- (rank (second ranks)) 1))
+           ;; Creates a list representing three suits for the triple
+           (lstOne (rand-choose-k 3 '(0 1 2 3)))
+           ;; Creates a list representing two suits for the double
+           (lstTwo (rand-choose-k 2 '(0 1 2 3))))
+      (append 
+        ;; Creates a number representing a card for each of the values for the
+        ;; triple. It takes the suit, multiplies it by thirteen and adds the
+        ;; value of the rank.
+        (map (lambda (curOne) (+ frst (* 13 curOne))) lstOne)
+        ;; Creates a number representing a card for each of the values for the
+        ;; double. It takes the suit, multiplies it by thirteen and adds the
+        ;; value of the rank.
+        (map (lambda (curTwo) (+ scnd (* 13 curTwo))) lstTwo)))))
+
+(tester '(rand-full-house))
+(tester '(rand-full-house))
+(tester '(rand-full-house))
+(tester '(rand-full-house))
+
+
+
+;; ----------------------------------------------------------------------------
+;; 2
+;; ----------------------------------------------------------------------------
+;; Let E be the event that a hand of five cards has at least one card in each 
+;; suit. Define a function has-even-distn? that takes a list of cards (i.e.,
+;; numbers from 0 to 51) as its only input and returns #t if those cards have ;; at least one of each suit (and returns #f otherwise).
+
+(problem 2)
+
+;; HAS-EVEN-DISTN?
+;; ----------------------------------------
+;;  INPUTS: E, A list of five cards
+;;  OUTPUT: A boolean if each of the four suits is present
+
+;; Checks if a hand of cards has one of each suit
+(define has-even-distn? 
+  (lambda (e)
+    ;; Creates a list ordered from least to greatest of the values in E
+    (let ((sLst (sort e <=)))
+      ;; Checks if the middle three cards cover the middle two suits and the
+      ;; highest and lowest cards are in the highest and lowest suit
+      (and
+       ;; Checks if the middle three have the second card in the second suit
+       ;; and the third in the third suit or the third card in the second suit
+       ;; and the fourth card in the third suit (this checks for the various
+       ;; repeat card possibilities)
+       (or
+        ;; Checks if the middle three have the second card in the second suit
+        ;; and the third in the third suit
+        (and 
+         (and (< 12 (second sLst)) (> 26 (second sLst))) 
+         (and (< 25 (third sLst)) (> 39 (third sLst))))
+        ;; Checks if the middle three have the third card in the second suit
+        ;; and the fourth card in the third suit
+        (and 
+         (and (< 12 (third sLst)) (> 26 (third sLst))) 
+         (and (< 25 (fourth sLst)) (> 39 (fourth sLst)))))
+       ;; Checks if the first card is in the lowest suit and checks if the
+       ;; highest card is in the highest suit
+       (and (> 13 (first sLst)) (< 38 (fifth sLst)))))))
+
+(tester '(has-even-distn? '(5 5 20 30 45)))
+(tester '(has-even-distn? '(5 20 20 30 45)))
+(tester '(has-even-distn? '(5 20 30 30 45)))
+(tester '(has-even-distn? '(5 20 30 45 45)))
+(tester '(has-even-distn? '(5 5 5 30 45)))
+(tester '(has-even-distn? '(0 12 13 26 39)))
+(tester '(has-even-distn? '(12 13 25 26 39)))
+(tester '(has-even-distn? '(12 25 26 38 39)))
+(tester '(has-even-distn? '(12 25 38 39 51)))
+(tester '(has-even-distn? '(44 22 35 32 5)))
+
+
+
+;; ----------------------------------------------------------------------------
+;; 3
+;; ----------------------------------------------------------------------------
+;; Let E be the event that a hand of five cards has even distribution (i.e., at
+;; least one card from each suit), as above. Also, let F be the event that a 
+;; hand of five cards has a full house, and let p stand for our probability
+;; function.
+;;
+;; Define the following global variables:
+;;     *prob-even-distn* <--- p(E)
+;;     *prob-full-house* <--- p(F)
+;;     *prob-even-distn-and-full-house* <--- p(E INTERSECT F)
+;;     *prob-even-distn-given-full-house* <--- p(E GIVEN F) = p(E|F)
+;;     *prob-full-house-given-even-distn* <--- p(F GIVEN E) = p(F|E)
+
+(problem 3)
+
+
+;; FACTORIAL
+;; ----------------------------------------
+;;  INPUTS: N, An integer representing the number to calculate the factorial of
+;;  OUTPUT: An integer representing the factorial result
+(define factorial
+  (lambda(n)
+    (cond
+      ;; Returns 1 when N reaches its minimum.
+      ((= n 0) 1)
+      ;; Multiples the value of the factorial of the previous number to N by N
+      (else (* n (factorial (- n 1)))))))
+
+
+;; 52, 3, 2 a triple from one rank - 48, 3 for picking a pair from another rank
+;; - factorial 3 for picking a cards to make the triple in any order - 
+;; factorial 2 for picking the cards in the pair in any order
+(define *num-full-house* (/ (* 52 3 2 48 3.) (* (factorial 3) (factorial 2))))
+
+;; 52, 39, 26, 13 to represent picking one of each suit - 48 for picking last
+;; card of any suit without picking an already present card - factorial 4 for 
+;; picking a card from any suit in any order - factorial 2 for picking the 
+;; cards in the repeated suit in any order
+(define *num-even-dist* 
+  (/ (* 52 39 26 13 48.) (* (factorial 4) (factorial 2))))
+
+;; 52, 3, 2 to represent picking a triple - 12 for picking a card of a unique
+;; suit and rank to finish the even distribution and start a pair - factorial
+;; 3 for picking the second card in the pair - factorial 3 for picking the 
+;; cards in the triple in any order - there is no overcounting for the other
+;; two because they always have to be in that order
+(define *num-even-distn-and-full-house* 
+  (/ (* 52 3 2 12 3) (factorial 3)))
+  
+;; Divides *NUM-FULL-HOUSE* by *NUM-5-CARD-HANDS* to get the probability of
+;; a full house being the drawn had in a deck of cards.
+(define *prob-full-house* (/ *num-full-house* *num-5-card-hands*))
+
+;; Divides *NUM-EVEN-DIST* by *NUM-5-CARD-HANDS* to get the probability of
+;; an even distribution being the drawn had in a deck of cards.
+(define *prob-even-distn* (/ *num-even-dist* *num-5-card-hands*))
+
+;; Divides *NUM-EVEN-DIST-AND-FULL-HOUSE* by *NUM-5-CARD-HANDS* to get the 
+;; probability of an even distribution being the drawn had in a deck of cards.
+(define *prob-even-distn-and-full-house* 
+  (/ *num-even-distn-and-full-house* *num-5-card-hands*))
+
+;; Divides *PROB-EVEN-DIST-GIVEN-FULL-HOUSE* (the probability of the intersect
+;; of an even distribution and full house) by *PROB-FULL-HOUSE* to get the 
+;; probability of an even distribution given a full house by the formula given
+;; in class.
+(define *prob-even-distn-given-full-house* 
+  (/ *prob-even-distn-and-full-house* *prob-full-house*))
+
+;; Divides *PROB-EVEN-DIST-GIVEN-FULL-HOUSE* (the probability of the intersect
+;; of an even distribution and full house) by *PROB-EVEN-DISTN* to get the 
+;; probability of a full house given an even distribution by the formula given
+;; in class.
+(define *prob-full-house-given-even-distn* 
+  (/ *prob-even-distn-and-full-house* *prob-even-distn*))
+
+(tester '*num-full-house*)
+(tester '*num-even-dist*)
+(tester '*prob-full-house*)
+(tester '*prob-even-distn*)
+(tester '*prob-even-distn-and-full-house*)
+(tester '(* *prob-full-house* *prob-even-distn*))
+(tester '*prob-even-distn-given-full-house*)
+(tester '*prob-full-house-given-even-distn*)
+
+
+
+;; ----------------------------------------------------------------------------
+;; 4
+;; ----------------------------------------------------------------------------
+;; Use gen-and-test, where rand-full-house is the generator function, and 
+;; has-even-distn? is the testing function. In comments for this function,
+;; please answer the following questions:
+;;    (a) Which of the above probabilities should this estimate?
+;;    (b) What is the value for that probability?
+
+(problem 4)
+
+(tester '(gen-and-test 10000 rand-full-house has-even-distn?))
+
+;; This should estimate the probability of *PROB-EVEN-DISTN-GIVEN-FULL-HOUSE*
+;; It is approxamately a 50% chance.

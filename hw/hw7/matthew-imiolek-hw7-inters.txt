@@ -1,0 +1,46 @@
+Welcome to DrScheme, version 4.2.1 [3m].
+Language: Swindle; memory limit: 128 megabytes.
+
+------------------------
+  1
+------------------------
+
+(rand-full-house) ====> (7 46 20 26 39)
+(rand-full-house) ====> (36 10 23 50 11)
+(rand-full-house) ====> (32 19 6 18 44)
+(rand-full-house) ====> (4 30 17 50 24)
+
+------------------------
+  2
+------------------------
+
+(has-even-distn? '(5 5 20 30 45)) ====> #t
+(has-even-distn? '(5 20 20 30 45)) ====> #t
+(has-even-distn? '(5 20 30 30 45)) ====> #t
+(has-even-distn? '(5 20 30 45 45)) ====> #t
+(has-even-distn? '(5 5 5 30 45)) ====> #f
+(has-even-distn? '(0 12 13 26 39)) ====> #t
+(has-even-distn? '(12 13 25 26 39)) ====> #t
+(has-even-distn? '(12 25 26 38 39)) ====> #t
+(has-even-distn? '(12 25 38 39 51)) ====> #t
+(has-even-distn? '(44 22 35 32 5)) ====> #t
+
+------------------------
+  3
+------------------------
+
+*num-full-house* ====> 3744.0
+*num-even-dist* ====> 685464.0
+*prob-full-house* ====> 0.0014405762304921968
+*prob-even-distn* ====> 0.2637454981992797
+*prob-even-distn-and-full-house* ====> 3/4165
+(* *prob-full-house* *prob-even-distn*) ====> 0.00037994549560520485
+*prob-even-distn-given-full-house* ====> 0.5
+*prob-full-house-given-even-distn* ====> 0.00273099681383705
+
+------------------------
+  4
+------------------------
+
+(gen-and-test 10000 rand-full-house has-even-distn?) ====> 0.4924
+> 

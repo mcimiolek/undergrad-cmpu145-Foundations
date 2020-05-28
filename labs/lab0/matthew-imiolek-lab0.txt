@@ -1,0 +1,141 @@
+;;; =====================================
+;;;  CMPU-145, Spring 2017
+;;;  Lab 0
+;;;  Matthew Imiolek
+;;; =====================================
+
+(load "asmt-helper.txt")
+
+(header "Lab 0" "Matthew Imiolek")
+
+
+(problem "(0): SUBSET?")
+
+;;;  SUBSET?
+;;; --------------------------------
+;;;  INPUTS:  AA, BB, two lists representing sets
+;;;  OUTPUT:  #t (or something that counts as TRUE), if AA is a subset of BB;
+;;;           #f otherwise
+
+(define subset?
+  (lambda (aa bb)
+    (cond
+      ;; Case 1:  AA is empty
+      ;; ---------------------------
+      ((null? aa)
+       ;; The empty list is a subset of any other list
+       #t)
+      ;; Case 2:  First element of AA is an element of BB
+      ;; --------------------------------------------------
+      ((member (first aa) bb)
+       ;; Return #t if all the rest of the elements of AA are too
+       (subset? (rest aa) bb))
+      ;; Case 3:  First element of AA is NOT an element of BB
+      ;; ------------------------------------------------------
+      (#t
+       ;; Thus, AA is not a subset of BB
+       #f))))
+
+(tester '(subset? () '(a b c)))
+(tester '(subset? '(1 2) '(3 4 2 5 1 8)))
+(tester '(subset? '(1 2) '(3 4 2 5 8 9 6)))
+(newline)
+
+
+;;;  SUBSET-V2?
+;;; --------------------------------
+;;;  INPUTS:  AA, BB, two lists representing sets
+;;;  OUTPUT:  #t (or something that counts as TRUE), if AA is a subset of BB;
+;;;           #f otherwise
+;;;  Note: This is another way of implementing the functionality of SUBSET
+
+(define subset-v2?
+  (lambda (aa bb)
+    ;; The following expression specifies the conditions under which
+    ;; AA is a subset of BB.
+
+    ;; Either AA is empty (which is a subset of anything)
+    (or (null? aa)
+        ;; Or ...  The first element of AA is an element of BB
+        (and (member (first aa) bb)
+             ;; ... And so are all the rest of the elements of AA
+             (subset-v2? (rest aa) bb)))))
+
+(tester '(subset-v2? () '(a b c)))
+(tester '(subset-v2? '(1 2) '(3 4 2 5 1 8)))
+(tester '(subset-v2? '(1 2) '(3 4 2 5 8 9 6)))
+
+(problem "(1) Intersection")
+
+;;;  INTERSECTION
+;;; ------------------------------
+;;;  INPUTS:  AA, BB, two lists representing sets
+;;;  OUTPUT:  A list representing the intersection of the two input lists
+;;;  Note:  If input lists don't have any duplicates, then neither should the
+;;;         output list
+
+(define intersection
+  (lambda (aa bb)
+    ;; The following expression creates a new set where
+    ;; AA intersects BB.
+    (cond
+      ;; Case 1:  AA is empty
+      ;; ---------------------------
+      ((null? aa)
+       ;; If AA is empty, the intersection is an empty set
+       '())
+      ;; Case 2: First element of AA is an element of BB
+      ;; --------------------------------------------------
+       ((member (first aa) bb)
+      ;; Add to a new set including all values in both sets
+       (cons (first aa) (intersection (rest aa) bb)))
+      ;;Case 3: First element of aa is not an element of BB
+      ;;---------------------------------------------------
+       (else
+      ;; Check rest of the elements
+        (intersection (rest aa) bb)))))
+
+(tester '(intersection () '(1 2 3)))
+(tester '(intersection () ()))
+(tester '(intersection '(1 2 3) ()))
+(tester '(intersection '(1 2 3) '(1 2 3)))
+(tester '(intersection '(1 2 3) '(1 2 3 4)))
+(tester '(intersection '(1 2 3 4) '(1 2 3)))
+(newline)
+
+
+(problem "(2) Union")
+
+;;;  UNION
+;;; ------------------------------
+;;;  INPUTS:  AA, BB, two lists representing sets
+;;;  OUTPUT:  A list representing the union of the two input sets
+;;;  Note:  If AA and BB don't have any duplicates, then neither should the
+;;;         output list.
+
+(define union
+  (lambda (aa bb)
+    ;; The following expression creates a new set of the union
+    ;; of AA and BB.
+    (cond
+      ;; Case 1:  AA is empty
+      ;; ---------------------------
+      ((null? aa)
+       ;; If AA is empty, the union of AA and BB is BB
+       bb)
+      ;; Case 2: First element of AA is an element of BB
+      ;; --------------------------------------------------
+       ((member (first aa) bb)
+      ;; Go to next value
+       (union (rest aa) bb))
+      ;;Case 3: First element of aa is not an element of bb
+      ;;---------------------------------------------------
+       (else
+      ;; Add to a set which is the union of AA and BB
+        (cons (first aa) (union (rest aa) bb))))))
+
+(tester '(union '(1 2) '(3 4 5)))
+(tester '(union '() '(3 4 5)))
+(tester '(union '(1 2) '()))
+(tester '(union '(1 2 3) '(3 4 5)))
+(tester '(union '(1 2 4) '(3)))

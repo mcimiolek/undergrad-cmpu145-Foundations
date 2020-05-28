@@ -1,0 +1,91 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Homework 4
+
+(load "asmt-helper.txt")
+                                                                                
+;;-----------------------------------------------------------------------------
+;;  PROBLEM 1:  Images and Restrictions
+;;-----------------------------------------------------------------------------
+
+;;GET-FUNC-VALUE (part a)
+;;-----------------------------------------------------------------------------
+;;INPUTS: DOMAIN-VALUE (an individual element in the domain of the function)
+;;        FUNC-PAIRS (a list of pairs representing a function)
+;;OUTPUTS: the value in FUNC-PAIRS associated with DOMAIN-VALUE
+
+;; finds the value associated with the domain value in a set of pairs
+;; representing a function
+(define get-func-value (lambda (domain-value func-pairs)
+                        (cond
+                         ;; if the value of the first number in the first pair
+                         ;; equals domain-value return the second value of the
+                         ;; pair
+                         ((equal? (first (first func-pairs)) domain-value)
+                           (second (first func-pairs)))
+                         ;; otherwise continues looking for a match later in
+                         ;; the set
+                         (else 
+                          (get-func-value domain-value (rest func-pairs))))))
+
+(tester '(get-func-value 2 '((2 4) (3 4) (1 4) (6 4))))
+(tester '(get-func-value '5 '((1 5) (3 4) (5 4) (2 8))))
+(tester '(get-func-value '(5 2) '(((5 2) (3 4)) (3 4) (5 4) (2 8))))
+(tester '(get-func-value 'a '((b c) (f g) (a m) (l k))))
+(tester '(get-func-value '6 '((5 4) (3 4) (1 4) (6 4))))
+(tester '(get-func-value 'c '((a 4) (3 d) (c 4) (2 4))))
+
+
+
+;;IMAGE (part b)
+;;-----------------------------------------------------------------------------
+;;INPUTS: SUBSET-OF-DOMAIN (an subset of the domain of the function)
+;;        FUNC-PAIRS (a list of pairs representing a function)
+;;OUTPUTS: the values in FUNC-PAIRS associated with those in SUBSET-OF-DOMAIN
+
+;; returns the values in a set of pairs representing a function associated
+;; with the values in a set of domain values. This function will also use
+;; the functions REMOVAL and GET-FUNC-VALUE.
+(define image (lambda (subset-of-domain func-pairs)
+                ;; removes duplicate values from the final set using removal
+                (removal 
+                 (cond
+                  ;; if the subset-of-domain is empty returns an empty list
+                  ((empty? subset-of-domain) '())
+                  ;; find the value in second of func-pairs of the first value
+                  ;; in subset-fo-domain using get-func-value and adds it to
+                  ;; the list of other found values
+                  (else
+                    (cons (get-func-value (first subset-of-domain) func-pairs)
+                      (image (rest subset-of-domain) func-pairs)))))))
+
+
+
+;;REMOVAL (copied from lab 1 with minor modifications)
+;;-----------------------------------------------------------------------------
+;;INPUTS: SET (a set which can contain duplicates)
+;;OUTPUTS: the same set without duplicate values
+
+;; code to remove duplicate values
+(define removal (lambda (set)
+                  (cond
+                    ((empty? set) set)
+                    ;; if a value is already in set ignores it and looks at
+                    ;; the rest of the list
+                    ((member (first set) (rest set)) (removal(rest set)))
+                    ;; if a value is not already in set adds it to set
+                    (else
+                     (cons (first set) (removal(rest set)))))))
+
+
+(tester '(image '(2) '((2 4) (3 4) (1 4) (6 4))))
+(tester '(image '(2 3 6) '((2 4) (3 5) (1 6) (6 7))))
+(tester '(image '(4 3) '((1 5) (2 6) (3 7) (4 8))))
+(tester '(image '(4) '((1 5) (2 6) (3 7) (4 8))))
+(tester '(image '(4 3) '((1 5) (2 5) (3 7) (4 7))))
+(tester '(image '(a b) '((a e) (b f) (c g) (d h))))
+(tester '(image '(a b c d) '((a e) (b e) (c e) (d e))))
+(tester '(image '(a 1 b 2) '((a f) (b 4) (1 3) (2 e))))
+
+
+

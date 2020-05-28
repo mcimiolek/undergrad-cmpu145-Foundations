@@ -1,0 +1,180 @@
+;; Matthew Imiolek
+;; CS145-52
+;; Lab 5
+
+(load "asmt-helper.txt")
+
+;; ----------------------------------------------------------------------------
+;; 1
+;; ----------------------------------------------------------------------------
+;; Define a function called RAND-CHOOSE-ONE that takes a list as its only
+;; input. You may assume that the list has is non-empty and has no duplicate
+;; items. The function should return one of the items from the input list,
+;; chosen at random.
+(problem 1)
+
+
+;;  RAND-CHOOSE-ONE
+;; ----------------------------------------
+;;  INPUTS:  LST, a list holding value to be randomly chosen from
+;;  OUTPUT:  an item in LST chosen randomly
+
+;; Chooses a random value from the given lsit
+(define rand-choose-one (lambda (lst)
+                          ;; Picks the location where random will be picked
+                          ;; from, and returns the value in LST at the place
+                          (nth lst (random (length lst)))))
+
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+(tester '(rand-choose-one '(a b c d)))
+
+
+
+;; ----------------------------------------------------------------------------
+;; 2
+;; ----------------------------------------------------------------------------
+;; Define a function called RAND-CHOOSE-K that takes two inputs, K and LISTY,
+;; where LISTY is a list of items and K is a non-negative integer that is no 
+;; bigger than the length of LISTY.  This function should return a *list* of K 
+;; items chosen randomly from LISTY such that REPETITION is NOT allowed and 
+;; ORDER does NOT matter, as illustrated below.
+(problem 2)
+
+
+;;  RAND-CHOOSE-K
+;; ----------------------------------------
+;;  INPUTS:  LST, a list holding value to be randomly chosen from
+;;           K, an integer representing the number of values to be chosen
+;;  OUTPUT:  an list with K items in LST chosen randomly
+
+;; Randomly chooses K values from LST
+(define rand-choose-k (lambda (k lst)
+                        (cond
+                          ;; Returns '() if K is 0
+                          ((equals? k 0) '())
+                          (else
+                           ;; Creates a local variable holding a randomly 
+                           ;; chosen value
+                           (let ((hold (rand-choose-one lst)))
+                             ;; Adds that value to a list of other randomly
+                             ;; choosen values and then picks another random
+                             ;; value from the list
+                             (cons hold (rand-choose-k (- k 1)
+                                                    ;; Removes the value for
+                                                    ;; no duplicates
+                                                    (remove hold lst))))))))
+
+(tester '(rand-choose-k 2 '(a b c d)))
+(tester '(rand-choose-k 2 '(a b c d)))
+(tester '(rand-choose-k 3 '(a b c d)))
+(tester '(rand-choose-k 4 '(a b c d)))
+
+
+
+;; ----------------------------------------------------------------------------
+;; 3
+;; ----------------------------------------------------------------------------
+(problem 3)
+
+;;  GEN-AND-TEST
+;; ----------------------------------------
+;;  INPUTS: N, the number of random trials to perform
+;;          GEN, a function (of zero inputs) that generates random instances of
+;;          some event (e.g., toss of a die; dealing of a hand of cards)
+;;          TEST, a function that tests whether a given instance satisfies some
+;;          property (e.g., whether die is greater than 4)
+;;  OUTPUT: a fraction representing the times the TEST was true with GEN
+
+;; Tests how many instances of a given function meet the requirments of a
+;; given property out of a given amount of times, and returns it as a fraction
+(define gen-and-test
+    (lambda (n gen test)
+      ;; Initialize a counter variable to zero
+      (let ((count 0))
+        ;; Use DOTIMES to do a loop N times
+        (dotimes (i n)
+                 ;; Use (GEN) to generate a random instance of some event.
+                 ;; If it satisfies the TEST predicate, then increment
+                 ;; the counter (destructively!!)
+                 (if (test (gen))
+                     (set! count (+ count 1))))
+        ;; After the loop is over, return the fraction of times that
+        ;; the randomly generated instances satisfied the given predicate
+        (/ count n 1.0))))
+
+
+
+;;  TOSS-DIE
+;; ----------------------------------------
+;;  INPUTS:  none
+;;  OUTPUT:  a random value from 1 to 6
+
+;; Simulates a dice roll
+(define toss-die (lambda ()
+                   ;; Returns 1-6 (numbers possible on a die)
+                   (+ 1 (random 6))))
+
+
+
+;;  TEST-DIE
+;; ----------------------------------------
+;;  INPUTS:  die, the integer value of a die roll
+;;  OUTPUT:  a boolean if the roll was a 5 or 6
+
+(define test-die (lambda (die)
+                   (or (= die 5) (= die 6))))
+
+;; Tests to make sure everything is working from given code
+(tester '(gen-and-test 1000 toss-die test-die))
+(tester '(gen-and-test 1000 toss-die test-die))
+(tester '(gen-and-test 1000 toss-die test-die))
+(printf "\n") ;; Added for clarity between tests
+
+
+
+;;  TOSS-PAIR-DICE
+;; ----------------------------------------
+;;  INPUTS:  None
+;;  OUTPUT:  a list representing two dice rolls
+
+;; Rolls a pair of dice and puts it in a list
+(define toss-pair-dice (lambda ()
+                         ;; Takes two individual rolls found with TOSS-DIE and
+                         ;; puts them in a list
+                         (list (toss-die) (toss-die))))
+
+(tester '(toss-pair-dice))
+(tester '(toss-pair-dice))
+(tester '(toss-pair-dice))
+(tester '(toss-pair-dice))
+(printf "\n") ;; Added for clarity between tests
+
+
+;;  TEST-PAIR-DICE
+;; ----------------------------------------
+;;  INPUTS:  PAIR, a pair of dice rolls
+;;  OUTPUT:  A boolean representing if the value of the two rolls together is
+;;           greater than 8.
+
+;; Tests if a pair of dice's values are greater than 8 when added together
+(define test-pair-dice (lambda (pair)
+                           ;; Returns true if the two values added together are
+                           ;; greater than 8
+                           (<= 8 (+ (first pair) (second pair)))))
+
+(tester '(test-pair-dice '(3 4)))
+(tester '(test-pair-dice '(0 0)))
+(tester '(test-pair-dice '(4 5)))
+(tester '(test-pair-dice '(6 6)))
+(printf "\n") ;; Added for clarity between tests
+
+(tester '(gen-and-test 10000 toss-pair-dice test-pair-dice))
+(tester '(gen-and-test 10000 toss-pair-dice test-pair-dice))
+(tester '(gen-and-test 10000 toss-pair-dice test-pair-dice))
+(tester '(gen-and-test 10000 toss-pair-dice test-pair-dice))
